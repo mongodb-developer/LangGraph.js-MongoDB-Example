@@ -1,0 +1,31 @@
+{
+  "name": "langgraph",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@langchain/anthropic": "^0.2.15",
+    "@langchain/core": "^0.2.28",
+    "@langchain/langgraph": "^0.1.1",
+    "@langchain/langgraph-checkpoint-mongodb": "^0.0.2",
+    "@langchain/mongodb": "^0.0.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "langchain": "^0.2.17",
+    "mermaid": "^11.0.2",
+    "mongodb": "^6.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
