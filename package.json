@@ -1,9 +1,10 @@
 {
-  "name": "langgraph",
+  "name": "langgraph-mongodb-example",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npx ts-node index.ts"
+    "dev": "npx ts-node index.ts",
+    "seed": "npx ts-node seed-database.ts"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +19,6 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "langchain": "^0.2.17",
-    "mermaid": "^11.0.2",
     "mongodb": "^6.8.0",
     "zod": "^3.23.8"
   },

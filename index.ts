@@ -7,7 +7,7 @@ const app: Express = express();
 app.use(express.json());
 
 // Initialize MongoDB client
-const client = new MongoClient(process.env.MONGODB_ATLAS_URI || "");
+const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
 
 async function startServer() {
   try {
