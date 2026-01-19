@@ -17,9 +17,9 @@ import "dotenv/config";
 
 export async function callAgent(client: MongoClient, query: string, thread_id: string) {
   // Define the MongoDB database and collection
-  const dbName = "hr_database";
+  const dbName = "blog_database";
   const db = client.db(dbName);
-  const collection = db.collection("employees");
+  const collection = db.collection("posts");
 
   // Define the graph state
   const GraphState = Annotation.Root({
@@ -29,9 +29,9 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
   });
 
   // Define the tools for the agent to use
-  const employeeLookupTool = tool(
+  const blogSearchTool = tool(
     async ({ query, n = 10 }) => {
-      console.log("Employee lookup tool called");
+      console.log("Blog search tool called");
 
       const dbConfig = {
         collection: collection,
@@ -50,10 +50,10 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
       return JSON.stringify(result);
     },
     {
-      name: "employee_lookup",
-      description: "Gathers employee details from the HR database",
+      name: "blog_search",
+      description: "Searches blog posts by topic, author, category, or content. Use this to find relevant articles and information from the blog.",
       schema: z.object({
-        query: z.string().describe("The search query"),
+        query: z.string().describe("The search query - can be a topic, keyword, author name, or question"),
         n: z
           .number()
           .optional()
@@ -63,13 +63,13 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
     }
   );
 
-  const tools = [employeeLookupTool];
+  const tools = [blogSearchTool];
   
   // We can extract the state typing via `GraphState.State`
   const toolNode = new ToolNode<typeof GraphState.State>(tools);
 
   const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-20240620",
+    model: "claude-sonnet-4-20250514",
     temperature: 0,
   }).bindTools(tools);
 
@@ -91,13 +91,31 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
     const prompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        `You are a helpful AI assistant, collaborating with other assistants. Use the provided tools to progress towards answering the question. If you are unable to fully answer, that's OK, another assistant with different tools will help where you left off. Execute what you can to make progress. If you or any of the other assistants have the final answer or deliverable, prefix your response with FINAL ANSWER so the team knows to stop. You have access to the following tools: {tool_names}.\n{system_message}\nCurrent time: {time}.`,
+        `You are the TLD Blog Agent for itsthatlady.dev, Kedasha Kerr's tech blog. You help users find and understand blog content about AI, machine learning, coding tutorials, career advice, and developer tools.
+
+Use the blog_search tool to find relevant articles when users ask questions. Answer questions based on the blog's content, summarize posts, and provide helpful information to readers.
+
+RESPONSE FORMAT:
+1. First, provide a helpful answer or summary based on the blog content
+2. Use bullet points or numbered lists for clarity when appropriate
+3. At the end, include a "📖 Read more:" section with links to relevant posts
+4. Format links as: [Post Title](https://www.itsthatlady.dev/blog/slug/)
+
+Example response format:
+"Here's what I found about AI agents...
+
+[Your helpful summary here]
+
+📖 Read more:
+- [What are AI Agents?](https://www.itsthatlady.dev/blog/ai-agents-explained/)"
+
+You have access to the following tools: {tool_names}.
+Current time: {time}.`,
       ],
       new MessagesPlaceholder("messages"),
     ]);
 
     const formattedPrompt = await prompt.formatMessages({
-      system_message: "You are helpful HR Chatbot Agent.",
       time: new Date().toISOString(),
       tool_names: tools.map((tool) => tool.name).join(", "),
       messages: state.messages,

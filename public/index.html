@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TLD Blog Agent | itsthatlady.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-warm-gray: #f2f2f2;
+      --sky-blue: #96c7f2;
+      --pink: #f396e5;
+      --slate-blue: #4e6273;
+      --mint-green: #adf296;
+      --yellow: #ffc947;
+      --peach: #f2cf96;
+      --white: #ffffff;
+      --black: #000000;
+      
+      --shadow-soft: 0 2px 8px rgba(78, 98, 115, 0.08);
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      background-color: #fafafa; 
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--slate-blue);
+    }
+
+    /* Main Chat Container */
+    .chat-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 20px rgba(78, 98, 115, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 85vh;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    /* Header */
+    .chat-header {
+      background: linear-gradient(90deg, #ffc947 0%, #f2cf96 100%);
+      padding: 32px;
+      position: relative;
+      border-bottom: 1px solid rgba(78, 98, 115, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-content {
+      text-align: center;
+    }
+
+    .chat-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--slate-blue);
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .chat-header p {
+      color: var(--slate-blue);
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* New Chat Button */
+    .new-chat-btn {
+      background-color: var(--sky-blue);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-top: 12px;
+      box-shadow: 0 2px 6px rgba(150, 199, 242, 0.4);
+    }
+
+    .new-chat-btn:hover {
+      background-color: var(--pink);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(243, 150, 229, 0.4);
+    }
+
+    /* Messages Area */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #ffffff;
+    }
+
+    /* Scrollbar styling */
+    .chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background-color: rgba(78, 98, 115, 0.1);
+      border-radius: 4px;
+    }
+
+    /* Message Bubbles */
+    .message {
+      max-width: 85%;
+      padding: 16px 24px;
+      border-radius: var(--radius-md);
+      line-height: 1.6;
+      font-size: 1rem;
+      animation: fadeIn 0.3s ease-out;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* User Message */
+    .message.user {
+      background-color: rgba(150, 199, 242, 0.25); 
+      color: var(--slate-blue);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Assistant Message */
+    .message.assistant {
+      background-color: var(--bg-warm-gray);
+      color: var(--black);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.assistant strong {
+      font-weight: 700;
+      color: var(--slate-blue);
+    }
+
+    .message.assistant a {
+      color: var(--slate-blue);
+      text-decoration: underline;
+      text-decoration-color: var(--sky-blue);
+      text-underline-offset: 3px;
+      transition: all 0.2s;
+    }
+    
+    .message.assistant a:hover {
+      background-color: var(--peach);
+      text-decoration: none;
+      color: var(--slate-blue);
+    }
+
+    /* Input Area */
+    .chat-input-container {
+      padding: 24px 32px;
+      background: var(--white);
+      border-top: 1px solid rgba(78, 98, 115, 0.05);
+      display: flex;
+      gap: 16px;
+      align-items: flex-end; 
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 16px 24px;
+      border: 1px solid #e0e0e0;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+      background: var(--white);
+      color: var(--slate-blue);
+    }
+
+    .chat-input:focus {
+      border: 2px solid var(--sky-blue);
+      box-shadow: 0 0 0 3px rgba(150, 199, 242, 0.1);
+    }
+    
+    .chat-input::placeholder {
+      color: #9ca3af;
+    }
+
+    /* Send Button */
+    .send-button {
+      background-color: var(--sky-blue);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .send-button:hover {
+      background-color: var(--pink);
+      transform: scale(1.05);
+    }
+
+    .send-button:disabled {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 6px;
+      padding: 16px 24px;
+      background: var(--bg-warm-gray);
+      border-radius: var(--radius-md);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      margin-bottom: 24px; 
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: var(--sky-blue);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* Markdown tweaks */
+    .message-content h1, .message-content h2, .message-content h3 {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      font-weight: 700;
+    }
+    .message-content p {
+      margin-bottom: 0.8em;
+    }
+    .message-content ul, .message-content ol {
+      margin-left: 1.5em;
+      margin-bottom: 0.8em;
+    }
+    .message-content code {
+      background: rgba(150, 199, 242, 0.2);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    .message-content pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    .message-content pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="header-content">
+        <h1>💕 TLD Blog Agent</h1>
+        <p>Get personalized answers from Kedasha's tech education content</p>
+      </div>
+      <button class="new-chat-btn" onclick="startNewChat()">+ New Chat</button>
+    </div>
+    
+    <div class="chat-messages" id="messages">
+      <div class="message assistant">
+        <div class="message-content">
+          Heyy 👋🏽 I'm the TLD Blog Agent! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-container">
+      <input 
+        type="text" 
+        class="chat-input" 
+        id="userInput" 
+        placeholder="Ask a question..."
+        onkeypress="handleKeyPress(event)"
+      >
+      <button class="send-button" onclick="sendMessage()" id="sendButton">Send</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+
+    let chatHistory = [];
+
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    });
+
+    // Make links open in new tab
+    const renderer = new marked.Renderer();
+    renderer.link = function({ href, title, tokens }) {
+      const text = this.parser.parseInline(tokens);
+      const titleAttr = title ? ` title="${title}"` : '';
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+    };
+    marked.use({ renderer });
+
+    function startNewChat() {
+      chatHistory = [];
+      messagesContainer.innerHTML = `
+        <div class="message assistant">
+           <div class="message-content">
+             Heyy 👋🏽 I'm the TLD Blog Agent! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
+           </div>
+        </div>
+      `;
+      userInput.value = '';
+      userInput.focus();
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      userInput.disabled = true;
+      sendButton.disabled = true;
+
+      addMessage(text, 'user');
+      userInput.value = '';
+
+      const typingId = addTypingIndicator();
+      scrollToBottom();
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: text
+          }),
+        });
+
+        removeTypingIndicator(typingId);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to get response');
+        }
+
+        const data = await response.json();
+        addMessage(data.response, 'assistant');
+        
+        chatHistory.push({ role: 'user', content: text });
+        chatHistory.push({ role: 'assistant', content: data.response });
+
+      } catch (error) {
+        console.error('Error:', error);
+        removeTypingIndicator(typingId);
+        addMessage(`Error: ${error.message}`, 'assistant');
+      } finally {
+        userInput.disabled = false;
+        sendButton.disabled = false;
+        userInput.focus();
+        scrollToBottom();
+      }
+    }
+
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      
+      if (type === 'assistant') {
+        contentDiv.innerHTML = marked.parse(text);
+      } else {
+        contentDiv.textContent = text;
+      }
+      
+      messageDiv.appendChild(contentDiv);
+      messagesContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function addTypingIndicator() {
+      const id = 'typing-' + Date.now();
+      const indicatorDiv = document.createElement('div');
+      indicatorDiv.className = 'typing-indicator';
+      indicatorDiv.id = id;
+      indicatorDiv.innerHTML = '<span></span><span></span><span></span>';
+      messagesContainer.appendChild(indicatorDiv);
+      return id;
+    }
+
+    function removeTypingIndicator(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.remove();
+      }
+    }
+
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>

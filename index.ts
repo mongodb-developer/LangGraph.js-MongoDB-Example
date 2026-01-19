@@ -1,60 +1,69 @@
 import 'dotenv/config';
 import express, { Express, Request, Response } from "express";
+import path from "path";
 import { MongoClient } from "mongodb";
 import { callAgent } from './agent';
 
 const app: Express = express();
 app.use(express.json());
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Initialize MongoDB client
 const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
 
 async function startServer() {
+  console.log("\n🚀 Starting TLD Blog Agent Server...\n");
+  
   try {
+    console.log("📡 Connecting to MongoDB Atlas...");
     await client.connect();
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("✅ Connected to MongoDB Atlas!\n");
 
-    // Set up basic Express route
-    // curl -X GET http://localhost:3000/
+    // Serve the chat interface
     app.get('/', (req: Request, res: Response) => {
-      res.send('LangGraph Agent Server');
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
     // API endpoint to start a new conversation
-    // curl -X POST -H "Content-Type: application/json" -d '{"message": "Build a team to make an iOS app, and tell me the talent gaps."}' http://localhost:3000/chat
+    // curl -X POST -H "Content-Type: application/json" -d '{"message": "What articles do you have about AI?"}' http://localhost:3000/chat
     app.post('/chat', async (req: Request, res: Response) => {
       const initialMessage = req.body.message;
       const threadId = Date.now().toString(); // Simple thread ID generation
       try {
+        console.log(`💬 New chat started (thread: ${threadId})`);
         const response = await callAgent(client, initialMessage, threadId);
         res.json({ threadId, response });
       } catch (error) {
-        console.error('Error starting conversation:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('❌ Error starting conversation:', error);
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
 
     // API endpoint to send a message in an existing conversation
-    // curl -X POST -H "Content-Type: application/json" -d '{"message": "What team members did you recommend?"}' http://localhost:3000/chat/123456789
+    // curl -X POST -H "Content-Type: application/json" -d '{"message": "Can you summarize that article for me?"}' http://localhost:3000/chat/123456789
     app.post('/chat/:threadId', async (req: Request, res: Response) => {
       const { threadId } = req.params;
       const { message } = req.body;
       try {
+        console.log(`💬 Message received (thread: ${threadId})`);
         const response = await callAgent(client, message, threadId);
         res.json({ response });
       } catch (error) {
-        console.error('Error in chat:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('❌ Error in chat:', error);
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🌐 Server running at http://localhost:${PORT}`);
+      console.log(`\n✨ TLD Blog Agent is ready! Open your browser to start chatting.\n`);
     });
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.error('\n❌ Error connecting to MongoDB:', error);
     process.exit(1);
   }
 }
