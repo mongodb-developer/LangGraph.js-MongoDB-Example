@@ -18,11 +18,11 @@ async function startServer() {
     // Set up basic Express route
     // curl -X GET http://localhost:3000/
     app.get('/', (req: Request, res: Response) => {
-      res.send('LangGraph Agent Server');
+      res.send('Blog Assistant Agent Server');
     });
 
     // API endpoint to start a new conversation
-    // curl -X POST -H "Content-Type: application/json" -d '{"message": "Build a team to make an iOS app, and tell me the talent gaps."}' http://localhost:3000/chat
+    // curl -X POST -H "Content-Type: application/json" -d '{"message": "What articles do you have about AI?"}' http://localhost:3000/chat
     app.post('/chat', async (req: Request, res: Response) => {
       const initialMessage = req.body.message;
       const threadId = Date.now().toString(); // Simple thread ID generation
@@ -36,7 +36,7 @@ async function startServer() {
     });
 
     // API endpoint to send a message in an existing conversation
-    // curl -X POST -H "Content-Type: application/json" -d '{"message": "What team members did you recommend?"}' http://localhost:3000/chat/123456789
+    // curl -X POST -H "Content-Type: application/json" -d '{"message": "Can you summarize that article for me?"}' http://localhost:3000/chat/123456789
     app.post('/chat/:threadId', async (req: Request, res: Response) => {
       const { threadId } = req.params;
       const { message } = req.body;

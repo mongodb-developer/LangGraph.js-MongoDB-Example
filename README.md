@@ -1,21 +1,20 @@
 
-# LangGraph.js-MongoDB-Example
+# Blog Assistant Agent
 
-This repository demonstrates how to use LangGraph with MongoDB for building and managing AI agents and conversational applications using an agentic approach. It showcases the integration of language models, graph-based conversation management, and MongoDB for data persistence, enabling the creation of intelligent, autonomous agents in TypeScript and Express.js.
+This repository demonstrates how to use LangGraph with MongoDB for building an AI-powered blog assistant. It showcases the integration of language models, graph-based conversation management, and MongoDB for data persistence.
 
 ## Features
 
 - Utilizes LangGraph for managing agentic conversational flows in TypeScript
-- Integrates with MongoDB Atlas for storing and retrieving conversation data
+- Integrates with MongoDB Atlas for storing and retrieving blog content
 - Implements a RESTful API using Express.js for chat interactions
-- Uses OpenAI's GPT model and Anthropic's API for generating responses
-- Includes a tool for employee lookup using MongoDB Atlas vector search
+- Uses Anthropic's Claude for generating responses
+- Includes a tool for blog post search using MongoDB Atlas vector search
 
 ## Prerequisites
 
 - [Node.js and npm](https://nodejs.org/)
 - [MongoDB Atlas account](https://www.mongodb.com/cloud/atlas)
-- [OpenAI API key](https://platform.openai.com/account/api-keys)
 - [Anthropic API key](https://www.anthropic.com/claude)
 
 ## Installation
@@ -38,14 +37,13 @@ npm install
 - Add your API keys and MongoDB URI:
   
   ```
-  OPENAI_API_KEY=your_openai_api_key_here
   ANTHROPIC_API_KEY=your_anthropic_api_key_here
   MONGODB_ATLAS_URI=your_mongodb_atlas_uri_here
   ```
 
 ## Seed the Database
 
-1. Run the seed script to generate and seed the database:
+1. Run the seed script to fetch blog posts and populate the database:
 
 ```bash
 npm run seed
@@ -74,15 +72,15 @@ npm run dev
 
 - `index.ts`: Entry point of the application, sets up the Express server and API routes
 - `agent.ts`: Defines the LangGraph agent, tools, and conversation flow
-- `seed-database.ts`: Script for generating and seeding synthetic employee data into MongoDB
+- `seed-database.ts`: Script for fetching blog posts and seeding them into MongoDB
 
 ## How it works
 
-1. The seed script in `seed-database.ts` generates synthetic employee data and populates the MongoDB database.
-2. The LangGraph agent is defined in `agent.ts`, including the conversation graph structure and tools.
+1. The seed script in `seed-database.ts` fetches blog posts from itsthatlady.dev and populates the MongoDB database with embeddings.
+2. The LangGraph agent is defined in `agent.ts`, including the conversation graph structure and blog search tool.
 3. MongoDB operations are integrated directly into the agent for storing and retrieving conversation data.
 4. The Express server in `index.ts` provides API endpoints for starting and continuing conversations.
-5. User inputs are processed through the LangGraph agent, generating appropriate responses and updating the conversation state.
+5. User inputs are processed through the LangGraph agent, which searches blog content and generates appropriate responses.
 6. Conversation data is persisted in MongoDB Atlas, allowing for continuity across sessions.
 
 ## Contributing
