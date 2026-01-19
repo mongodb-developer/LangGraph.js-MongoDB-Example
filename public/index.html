@@ -33,7 +33,7 @@
 
     body {
       font-family: 'DM Sans', 'Inter', sans-serif;
-      background-color: #ffffff; 
+      background-color: #fafafa; 
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -46,9 +46,9 @@
     .chat-container {
       width: 100%;
       max-width: 800px;
-      background: var(--bg-warm-gray);
+      background: var(--white);
       border-radius: var(--radius-lg);
-      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(78, 98, 115, 0.08);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -58,8 +58,8 @@
 
     /* Header */
     .chat-header {
-      background: linear-gradient(90deg, rgba(150, 199, 242, 0.15) 0%, rgba(243, 150, 229, 0.15) 100%);
-      padding: 24px 32px;
+      background: linear-gradient(90deg, #96c7f2 0%, #adf296 100%);
+      padding: 32px;
       position: relative;
       border-bottom: 1px solid rgba(78, 98, 115, 0.05);
       display: flex;
@@ -114,7 +114,7 @@
       padding: 32px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       background: #ffffff;
     }
 
@@ -135,7 +135,7 @@
       max-width: 85%;
       padding: 16px 24px;
       border-radius: var(--radius-md);
-      line-height: 1.7;
+      line-height: 1.6;
       font-size: 1rem;
       animation: fadeIn 0.3s ease-out;
       position: relative;
@@ -148,7 +148,7 @@
 
     /* User Message */
     .message.user {
-      background-color: rgba(150, 199, 242, 0.2); 
+      background-color: rgba(150, 199, 242, 0.25); 
       color: var(--slate-blue);
       align-self: flex-end;
       border-bottom-right-radius: 4px;
@@ -194,7 +194,7 @@
     .chat-input {
       flex: 1;
       padding: 16px 24px;
-      border: 1px solid var(--slate-blue); 
+      border: 1px solid #e0e0e0;
       border-radius: var(--radius-sm);
       font-family: inherit;
       font-size: 1rem;
@@ -205,12 +205,12 @@
     }
 
     .chat-input:focus {
-      border-color: var(--sky-blue);
-      box-shadow: 0 0 0 4px rgba(150, 199, 242, 0.1);
+      border: 2px solid var(--sky-blue);
+      box-shadow: 0 0 0 3px rgba(150, 199, 242, 0.1);
     }
     
     .chat-input::placeholder {
-      color: rgba(78, 98, 115, 0.5);
+      color: #9ca3af;
     }
 
     /* Send Button */
@@ -223,7 +223,7 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.2s ease;
     }
 
     .send-button:hover {
