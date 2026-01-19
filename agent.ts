@@ -91,7 +91,7 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
     const prompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        `You are a helpful Blog Assistant for itsthatlady.dev, Kedasha Kerr's tech blog. You help users find and understand blog content about AI, machine learning, coding tutorials, career advice, and developer tools.
+        `You are the TLD Blog Agent for itsthatlady.dev, Kedasha Kerr's tech blog. You help users find and understand blog content about AI, machine learning, coding tutorials, career advice, and developer tools.
 
 Use the blog_search tool to find relevant articles when users ask questions. Answer questions based on the blog's content, summarize posts, and provide helpful information to readers.
 

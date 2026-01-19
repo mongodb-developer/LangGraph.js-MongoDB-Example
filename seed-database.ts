@@ -105,21 +105,25 @@ async function fetchBlogPost(slug: string, title: string): Promise<BlogPost | nu
 }
 
 async function fetchAllBlogPosts(): Promise<BlogPost[]> {
-  console.log("Fetching blog posts from itsthatlady.dev...");
+  console.log("\n📥 Fetching blog posts from itsthatlady.dev...\n");
   
   const posts: BlogPost[] = [];
+  const total = BLOG_POSTS.length;
   
-  for (const { slug, title } of BLOG_POSTS) {
-    console.log(`Fetching: ${title}...`);
+  for (let i = 0; i < BLOG_POSTS.length; i++) {
+    const { slug, title } = BLOG_POSTS[i];
     const post = await fetchBlogPost(slug, title);
     if (post) {
       posts.push(post);
+      console.log(`   [${i + 1}/${total}] ✅ ${title}`);
+    } else {
+      console.log(`   [${i + 1}/${total}] ❌ Failed: ${title}`);
     }
     // Small delay to be respectful to the server
     await new Promise(resolve => setTimeout(resolve, 500));
   }
   
-  console.log(`Successfully fetched ${posts.length} blog posts`);
+  console.log(`\n📦 Successfully fetched ${posts.length}/${total} blog posts\n`);
   return posts;
 }
 
@@ -132,15 +136,18 @@ function createBlogPostSummary(post: BlogPost): string {
 }
 
 async function seedDatabase(): Promise<void> {
+  console.log("\n🚀 Starting database seed...\n");
+  
   try {
     await client.connect();
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("📡 Connected to MongoDB Atlas!\n");
 
     const db = client.db("blog_database");
     const collection = db.collection("posts");
 
     await collection.deleteMany({});
+    console.log("🗑️  Cleared existing data\n");
     
     const blogPosts = await fetchAllBlogPosts();
 
@@ -149,7 +156,11 @@ async function seedDatabase(): Promise<void> {
       metadata: {...post},
     }));
     
-    for (const record of recordsWithSummaries) {
+    console.log("🧠 Creating embeddings and storing in MongoDB...\n");
+    
+    const total = recordsWithSummaries.length;
+    for (let i = 0; i < recordsWithSummaries.length; i++) {
+      const record = recordsWithSummaries[i];
       await MongoDBAtlasVectorSearch.fromDocuments(
         [record],
         new OpenAIEmbeddings(),
@@ -161,15 +172,16 @@ async function seedDatabase(): Promise<void> {
         }
       );
 
-      console.log("Successfully processed & saved record:", record.metadata.slug);
+      console.log(`   [${i + 1}/${total}] ✅ Embedded: ${record.metadata.title}`);
     }
 
-    console.log("Database seeding completed");
+    console.log("\n✨ Done! Successfully seeded " + total + " blog posts.\n");
 
   } catch (error) {
-    console.error("Error seeding database:", error);
+    console.error("\n❌ Error seeding database:", error);
   } finally {
     await client.close();
+    console.log("👋 Disconnected from MongoDB\n");
   }
 }
 

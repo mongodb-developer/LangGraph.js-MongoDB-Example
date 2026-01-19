@@ -14,10 +14,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
 
 async function startServer() {
+  console.log("\n🚀 Starting TLD Blog Agent Server...\n");
+  
   try {
+    console.log("📡 Connecting to MongoDB Atlas...");
     await client.connect();
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("✅ Connected to MongoDB Atlas!\n");
 
     // Serve the chat interface
     app.get('/', (req: Request, res: Response) => {
@@ -30,11 +33,12 @@ async function startServer() {
       const initialMessage = req.body.message;
       const threadId = Date.now().toString(); // Simple thread ID generation
       try {
+        console.log(`💬 New chat started (thread: ${threadId})`);
         const response = await callAgent(client, initialMessage, threadId);
         res.json({ threadId, response });
       } catch (error) {
-        console.error('Error starting conversation:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('❌ Error starting conversation:', error);
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
 
@@ -44,20 +48,22 @@ async function startServer() {
       const { threadId } = req.params;
       const { message } = req.body;
       try {
+        console.log(`💬 Message received (thread: ${threadId})`);
         const response = await callAgent(client, message, threadId);
         res.json({ response });
       } catch (error) {
-        console.error('Error in chat:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('❌ Error in chat:', error);
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🌐 Server running at http://localhost:${PORT}`);
+      console.log(`\n✨ TLD Blog Agent is ready! Open your browser to start chatting.\n`);
     });
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.error('\n❌ Error connecting to MongoDB:', error);
     process.exit(1);
   }
 }

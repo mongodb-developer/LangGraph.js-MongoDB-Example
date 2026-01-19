@@ -1,7 +1,7 @@
 
-# Blog Assistant Agent
+# TLD Blog Agent
 
-This repository demonstrates how to use LangGraph with MongoDB for building an AI-powered blog assistant. It showcases the integration of language models, graph-based conversation management, and MongoDB for data persistence.
+This repository demonstrates how to use LangGraph with MongoDB for building the TLD Blog Agent. It showcases the integration of language models, graph-based conversation management, and MongoDB for data persistence.
 
 ## Features
 
@@ -10,6 +10,7 @@ This repository demonstrates how to use LangGraph with MongoDB for building an A
 - Implements a RESTful API using Express.js for chat interactions
 - Uses Anthropic's Claude for generating responses
 - Includes a tool for blog post search using MongoDB Atlas vector search
+- **Web-based chat interface** for easy interaction with the TLD Blog Agent
 
 ## Prerequisites
 
@@ -51,6 +52,29 @@ npm install
 npm run seed
 ```
 
+## Create Vector Search Index
+
+After seeding the database, create a vector search index in MongoDB Atlas:
+
+1. Go to **Database → Browse Collections → blog_database.posts**
+2. Click **Search Indexes → Create Index**
+3. Choose **JSON Editor** and use:
+
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 1536,
+      "similarity": "cosine"
+    }
+  ]
+}
+```
+
+4. Name the index `vector_index`
+
 ## Usage
 
 1. Start the server:
@@ -59,15 +83,17 @@ npm run seed
 npm run dev
 ```
 
-2. Use the following API endpoints:
+2. Open the chat interface at **http://localhost:3000**
+
+3. Or use the API endpoints directly:
 
 - Start a new conversation:
   ```
-  curl -X POST -H "Content-Type: application/json" -d '{"message": "Your message here"}' http://localhost:3000/chat
+  curl -X POST -H "Content-Type: application/json" -d '{"message": "What posts do you have about AI?"}' http://localhost:3000/chat
   ```
 - Continue an existing conversation:
   ```
-  curl -X POST -H "Content-Type: application/json" -d '{"message": "Your follow-up message"}' http://localhost:3000/chat/{threadId}
+  curl -X POST -H "Content-Type: application/json" -d '{"message": "Tell me more about that"}' http://localhost:3000/chat/{threadId}
   ```
 
 ## Project Structure
@@ -75,6 +101,7 @@ npm run dev
 - `index.ts`: Entry point of the application, sets up the Express server and API routes
 - `agent.ts`: Defines the LangGraph agent, tools, and conversation flow
 - `seed-database.ts`: Script for fetching blog posts and seeding them into MongoDB
+- `public/index.html`: Web-based chat interface
 
 ## How it works
 

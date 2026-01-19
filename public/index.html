@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TLD Blog Assistant | itsthatlady.dev</title>
+  <title>TLD Blog Agent | itsthatlady.dev</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -307,7 +307,7 @@
   <div class="chat-container">
     <div class="chat-header">
       <div class="header-content">
-        <h1>💕 TLD Blog Assistant</h1>
+        <h1>💕 TLD Blog Agent</h1>
         <p>Get personalized answers from Kedasha's tech education content</p>
       </div>
       <button class="new-chat-btn" onclick="startNewChat()">+ New Chat</button>
@@ -316,7 +316,7 @@
     <div class="chat-messages" id="messages">
       <div class="message assistant">
         <div class="message-content">
-          Heyy 👋🏽 I'm your blog assistant! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
+          Heyy 👋🏽 I'm the TLD Blog Agent! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
         </div>
       </div>
     </div>
@@ -346,12 +346,21 @@
       gfm: true
     });
 
+    // Make links open in new tab
+    const renderer = new marked.Renderer();
+    renderer.link = function({ href, title, tokens }) {
+      const text = this.parser.parseInline(tokens);
+      const titleAttr = title ? ` title="${title}"` : '';
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+    };
+    marked.use({ renderer });
+
     function startNewChat() {
       chatHistory = [];
       messagesContainer.innerHTML = `
         <div class="message assistant">
            <div class="message-content">
-             Heyy 👋🏽 I'm your blog assistant! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
+             Heyy 👋🏽 I'm the TLD Blog Agent! Ask me about AI, machine learning, coding tutorials, or any topic from the blog. I'm here to help you learn!
            </div>
         </div>
       `;
@@ -380,33 +389,33 @@
       scrollToBottom();
 
       try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            message: text,
-            history: chatHistory
+            message: text
           }),
         });
 
         removeTypingIndicator(typingId);
 
         if (!response.ok) {
-          throw new Error('Failed to get response');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to get response');
         }
 
         const data = await response.json();
-        addMessage(data.answer, 'assistant');
+        addMessage(data.response, 'assistant');
         
         chatHistory.push({ role: 'user', content: text });
-        chatHistory.push({ role: 'assistant', content: data.answer });
+        chatHistory.push({ role: 'assistant', content: data.response });
 
       } catch (error) {
         console.error('Error:', error);
         removeTypingIndicator(typingId);
-        addMessage('Sorry, something went wrong. Please try again.', 'assistant');
+        addMessage(`Error: ${error.message}`, 'assistant');
       } finally {
         userInput.disabled = false;
         sendButton.disabled = false;
