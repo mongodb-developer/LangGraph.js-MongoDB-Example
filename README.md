@@ -15,7 +15,8 @@ This repository demonstrates how to use LangGraph with MongoDB for building an A
 
 - [Node.js and npm](https://nodejs.org/)
 - [MongoDB Atlas account](https://www.mongodb.com/cloud/atlas)
-- [Anthropic API key](https://www.anthropic.com/claude)
+- [OpenAI API key](https://platform.openai.com/account/api-keys) (for embeddings)
+- [Anthropic API key](https://www.anthropic.com/claude) (for chat)
 
 ## Installation
 
@@ -37,6 +38,7 @@ npm install
 - Add your API keys and MongoDB URI:
   
   ```
+  OPENAI_API_KEY=your_openai_api_key_here
   ANTHROPIC_API_KEY=your_anthropic_api_key_here
   MONGODB_ATLAS_URI=your_mongodb_atlas_uri_here
   ```

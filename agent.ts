@@ -69,7 +69,7 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
   const toolNode = new ToolNode<typeof GraphState.State>(tools);
 
   const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-20240620",
+    model: "claude-sonnet-4-20250514",
     temperature: 0,
   }).bindTools(tools);
 
