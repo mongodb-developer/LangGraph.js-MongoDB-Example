@@ -95,6 +95,20 @@ export async function callAgent(client: MongoClient, query: string, thread_id: s
 
 Use the blog_search tool to find relevant articles when users ask questions. Answer questions based on the blog's content, summarize posts, and provide helpful information to readers.
 
+RESPONSE FORMAT:
+1. First, provide a helpful answer or summary based on the blog content
+2. Use bullet points or numbered lists for clarity when appropriate
+3. At the end, include a "📖 Read more:" section with links to relevant posts
+4. Format links as: [Post Title](https://www.itsthatlady.dev/blog/slug/)
+
+Example response format:
+"Here's what I found about AI agents...
+
+[Your helpful summary here]
+
+📖 Read more:
+- [What are AI Agents?](https://www.itsthatlady.dev/blog/ai-agents-explained/)"
+
 You have access to the following tools: {tool_names}.
 Current time: {time}.`,
       ],

@@ -1,10 +1,14 @@
 import 'dotenv/config';
 import express, { Express, Request, Response } from "express";
+import path from "path";
 import { MongoClient } from "mongodb";
 import { callAgent } from './agent';
 
 const app: Express = express();
 app.use(express.json());
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize MongoDB client
 const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
@@ -15,10 +19,9 @@ async function startServer() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-    // Set up basic Express route
-    // curl -X GET http://localhost:3000/
+    // Serve the chat interface
     app.get('/', (req: Request, res: Response) => {
-      res.send('Blog Assistant Agent Server');
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
     // API endpoint to start a new conversation
